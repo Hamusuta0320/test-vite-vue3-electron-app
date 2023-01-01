@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, globalShortcut, ipcMain } = require('electron')
 const path = require('path')
+const os = require('os')
 
 //这里的配置手动写的，也可以使用cross-env插件配置
 const mode = process.env.NODE_ENV
@@ -15,8 +16,22 @@ function createWindow() {
         height: 600,
         frame: true /*是否展示顶部导航  去掉关闭按钮  最大化最小化按钮*/ ,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.cjs'),
         },
+    })
+    const handleSetTitle = (event, title) => {
+        console.log('title:', title);
+        const webContents = event.sender
+        const win = BrowserWindow.fromWebContents(webContents)
+        console.log('set');
+        win.setTitle(String(title))
+        win.webContents.send('change-title-ok', "from main")
+    }
+    ipcMain.on('set-title', handleSetTitle)
+    ipcMain.handle('get_os_name', ()=> {
+        const os_name = os.platform()
+        console.log(os_name);
+        return os_name
     })
 
     // and load the index.html of the app.
@@ -29,15 +44,18 @@ function createWindow() {
     // if (mode === 'development') {
     //     mainWindow.webContents.openDevTools()
     // }
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
+    return mainWindow
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    createWindow()
-
+    const mainWindow = createWindow()
+    globalShortcut.register('CommandOrControl+X', function() {
+        mainWindow.webContents.openDevTools()
+    })
     app.on('activate', function() {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.

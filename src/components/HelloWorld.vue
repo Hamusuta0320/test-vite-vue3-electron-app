@@ -1,16 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
+import { onMounted, ref } from 'vue'
+const setTitle = window.versions.setTitle
+// import {ipcRenderer} from 'electron'
 defineProps<{ msg: string }>()
 
 const count = ref(0)
+const btn_click = () => {
+  count.value++
+  setTitle(count.value)
+}
+const os_name = ref('')
+onMounted(async () => {
+  window.versions.handle_main_event((e, msg)=>{
+    console.log('ok,ths', msg)
+  })
+  os_name.value = await window.versions.get_os_name()
+})
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
+  <h1>{{ os_name }}</h1>
   <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
+    <button type="button" @click="btn_click">count is {{ count }}</button>
     <p>
       Edit
       <code>components/HelloWorld.vue</code> to test HMR

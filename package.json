@@ -6,17 +6,18 @@
   "main": "./electron/main.cjs",
   "author": "hamusuta",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vue-tsc --noEmit && vite build",
+    "vue:dev": "vite --host",
+    "vue:build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "start": "electron .",
     "electron": "wait-on tcp:5173 && cross-env NODE_ENV=development electron .",
-    "electron:serve": "concurrently -k  \"yarn dev\" \"yarn electron\"",
+    "dev": "concurrently -k  \"yarn vue:dev\" \"yarn electron\"",
     "electron:build": "electron-builder",
-    "app:build": "concurrently -k  \"yarn build\" \"yarn electron:build\""
+    "app:build": "yarn vue:build && yarn electron:build"
   },
   "dependencies": {
     "@types/node": "^18.11.18",
+    "axios": "^1.2.2",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
     "vue": "^3.2.45",
