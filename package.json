@@ -1,0 +1,55 @@
+{
+  "name": "test-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./electron/main.cjs",
+  "author": "hamusuta",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "start": "electron .",
+    "electron": "wait-on tcp:5173 && cross-env NODE_ENV=development electron .",
+    "electron:serve": "concurrently -k  \"yarn dev\" \"yarn electron\"",
+    "electron:build": "electron-builder",
+    "app:build": "concurrently -k  \"yarn build\" \"yarn electron:build\""
+  },
+  "dependencies": {
+    "@types/node": "^18.11.18",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6",
+    "wait-on": "^7.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0",
+    "vue-tsc": "^1.0.11"
+  },
+  "license": "MIT",
+  "build": {
+    "appId": "com.my-website.my-app",
+    "productName": "MyApp",
+    "copyright": "Copyright © 2019 ${author}",
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist_electron"
+    }
+  }
+}
